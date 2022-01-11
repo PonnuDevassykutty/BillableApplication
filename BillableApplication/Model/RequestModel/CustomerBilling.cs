@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace TQL.BillableApplication.API.Model.RequestModel
 {
@@ -17,26 +14,29 @@ namespace TQL.BillableApplication.API.Model.RequestModel
         [Required]
         public string City { get; set; }
         [Required]
-        public string PhoneNo { get; set; }
+        public int PhoneNo { get; set; }
+        
+        public string Email { get; set; }
         [Required]
         public string FromAddress { get; set; }
         [Required]
         public string FromCity { get; set; }
         [Required]
-        public string FromPostalCode { get; set; }
+        public int FromPostalCode { get; set; }
         [Required]
         public string ToAddress { get; set; }
         [Required]
         public string ToCity { get; set; }
         [Required]
-        public string ToPostalCode { get; set; }
+        public int ToPostalCode { get; set; }
         [Required]
         public string Commodity { get; set; }
         [Required]
         public decimal Weight { get; set; }
         [Required]
         public string DeliveryType { get; set; }
-        
+        [Required]
+        public DateTime PickUpDate { get; set; }
         public string Comments { get; set; }
         public int PONumber { get; set; }
         public decimal Tax { get; set; }

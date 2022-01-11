@@ -1,8 +1,10 @@
 ﻿using Dapper;
-using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using TQL.BillableApplication.API.Context;
 using TQL.BillableApplication.API.Model.RequestModel;
@@ -16,8 +18,8 @@ namespace TQL.BillableApplication.API.Respository
         private readonly DapperContext _context;
         private const string StandardDeliveryType= "Standard";
         private const string SpeedDeliveryType = "Speed";
-        private const decimal StandardDeliveryCost = 15;
-        private const decimal SpeedDeliveryCost = 30;
+        private const decimal StandardDeliveryCost = 5;
+        private const decimal SpeedDeliveryCost = 8;
         public CustomerBillingRepo(DapperContext context)
         {
             _context = context;
@@ -30,6 +32,7 @@ namespace TQL.BillableApplication.API.Respository
                 "(@LastName," +
                 "@FirstName," +
                 "@Address," +
+                "@Email,"+
                 "@City," +
                 "@PhoneNo," +
                 "@FromAddress," +
@@ -40,8 +43,9 @@ namespace TQL.BillableApplication.API.Respository
                 "@ToPostalCode," +
                 "@Commodity," +
                 "@Weight," +
-                "@DeliveryType" +
-                ",@Comments,0,0,0)"+
+                "@DeliveryType," +
+                "@PickUpDate,"+
+                "@Comments,0,0,0)"+
                 "Select cast(Scope_Identity() as int)";
 
             using (var connection = _context.CreateConnection())
@@ -87,6 +91,18 @@ namespace TQL.BillableApplication.API.Respository
             decimal tax=0;
             decimal totalCost = 0;
             var query = CustomerBillingQuery.UpdateCost;
+            string origin = string.Concat(customerBilling.FromAddress, customerBilling.FromCity,customerBilling.FromPostalCode);//"Oberoi Mall, Goregaon";
+            string destination = string.Concat(customerBilling.ToAddress, customerBilling.ToCity, customerBilling.ToPostalCode);//"Infinity IT Park, Malad East";
+            //string url = "https://maps.googleapis.com/maps/api/distancematrix/xml?origins=" + origin + "&destinations=" + destination + "&key=99f2fd51b9f5ab60251c77d95b4e181c";
+            string url = "https://www.zipcodeapi.com/rest/DemoOnly00r7HSe9B2uclbCgzXXfv5bFyfNMb0XAa0oH24g4QIW1QJwzGFUm64ys/distance.json/"+ customerBilling.FromPostalCode + "/"+ customerBilling.ToPostalCode + "/km";
+            WebRequest request = WebRequest.Create(url);
+            using (WebResponse response = (HttpWebResponse)request.GetResponse())
+            {
+                using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                {
+                    distance = Convert.ToDecimal(reader.ReadToEnd().Split(":")[1].Replace("}", ""));
+                }
+            }
             using (var connection = _context.CreateConnection())
             {
                 try

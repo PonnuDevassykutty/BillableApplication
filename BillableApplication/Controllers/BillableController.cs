@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 using TQL.BillableApplication.API.Model.RequestModel;
 using TQL.BillableApplication.API.Model.ResponseModel;
 using TQL.BillableApplication.API.Respository;
